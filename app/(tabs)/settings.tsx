@@ -37,10 +37,16 @@ export default function Settings() {
       <View style={[styles.featuresCard, { backgroundColor: cardBg }]}>
         <Text style={[styles.featuresTitle, { color: text }]}>Tips</Text>
         <Text style={[styles.featureItem, { color: muted }]}>
-          You can save word card and share it instantly.
+          📍 You can save word card and share it instantly.
         </Text>
         <Text style={[styles.featureItem, { color: muted }]}>
-          Change meaning by tapping Other Definitions.
+          📍 Change meaning by tapping Other Definitions.
+        </Text>
+        <Text style={[styles.featureItem, { color: muted }]}>
+          ⚠️ Some words are case-sensitive
+        </Text>
+        <Text style={[styles.featureItem, { color: muted }]}>
+          ✌️ Please try using all lowercase or Uppercase the first letter.
         </Text>
       </View>
       <View style={styles.footerWrap}>
@@ -127,10 +133,6 @@ const styles = StyleSheet.create({
   },
   icon: { marginRight: 12 },
   footerText: { flexShrink: 1, fontSize: 14, textAlign: "center" },
-});
-
-// Reuse small features card styles used elsewhere
-Object.assign(styles, {
   featuresCard: {
     width: "100%",
     borderRadius: 14,
@@ -138,17 +140,14 @@ Object.assign(styles, {
     paddingVertical: 14,
     marginTop: 16,
     maxWidth: 420,
-    alignItems: "center",
   },
   featuresTitle: {
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 8,
-    textAlign: "center",
   },
   featureItem: {
     fontSize: 12,
     lineHeight: 18,
-    textAlign: "center",
   },
 });
