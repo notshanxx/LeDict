@@ -1,5 +1,6 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import {
+  Platform,
   StyleProp,
   StyleSheet,
   Text,
@@ -175,8 +176,10 @@ export default function DictionaryCard({
     style,
     isSelected ? { borderColor: activeColor, borderWidth: 2 } : null,
   ];
+  const allowCardPress =
+    Boolean(onPress) && !(onSelectDefinition && Platform.OS === "android");
 
-  if (onPress) {
+  if (allowCardPress && onPress) {
     return (
       <TouchableOpacity onPress={onPress} style={cardStyle} activeOpacity={0.8}>
         {content}
