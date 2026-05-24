@@ -2,15 +2,21 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const iconColor = useThemeColor({}, "icon");
   const active = useThemeColor({}, "tabIconSelected");
   const inactive = useThemeColor({}, "tabIconDefault");
   const tabBg = useThemeColor({}, "background");
-  const tabBarWidth = Math.min(Math.max(width - 32, 280), 380);
-  const tabBarLeft = Math.max((width - tabBarWidth) / 2, 0);
+  const availableWidth = Math.max(width - insets.left - insets.right, 0);
+  const tabBarWidth = Math.min(Math.max(availableWidth - 32, 280), 380);
+  const tabBarLeft = Math.max(
+    insets.left + (availableWidth - tabBarWidth) / 2,
+    0,
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: tabBg }}>
@@ -25,7 +31,7 @@ export default function TabLayout() {
             backgroundColor: tabBg,
             width: tabBarWidth,
             left: tabBarLeft,
-            bottom: 16,
+            bottom: 16 + insets.bottom,
             borderRadius: 18,
           },
           sceneStyle: { backgroundColor: tabBg },
