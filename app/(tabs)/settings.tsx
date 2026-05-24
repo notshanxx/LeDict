@@ -3,6 +3,7 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   Linking,
+  Platform,
   Pressable,
   StyleSheet,
   Switch,
@@ -20,6 +21,12 @@ export default function Settings() {
     { light: "#F4F7F9", dark: "#1C1F22" },
     "background",
   );
+  const tips = [
+    "You can save word card and share it instantly.",
+    "Change meaning by tapping Other Definitions.",
+    "Some words are case-sensitive",
+    "Please try using all lowercase or Uppercase the first letter.",
+  ];
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
@@ -36,18 +43,12 @@ export default function Settings() {
 
       <View style={[styles.featuresCard, { backgroundColor: cardBg }]}>
         <Text style={[styles.featuresTitle, { color: text }]}>Tips</Text>
-        <Text style={[styles.featureItem, { color: muted }]}>
-          📍 You can save word card and share it instantly.
-        </Text>
-        <Text style={[styles.featureItem, { color: muted }]}>
-          📍 Change meaning by tapping Other Definitions.
-        </Text>
-        <Text style={[styles.featureItem, { color: muted }]}>
-          ⚠️ Some words are case-sensitive
-        </Text>
-        <Text style={[styles.featureItem, { color: muted }]}>
-          ✌️ Please try using all lowercase or Uppercase the first letter.
-        </Text>
+        {tips.map((tip) => (
+          <View key={tip} style={styles.tipRow}>
+            <View style={[styles.tipBar, { backgroundColor: tint }]} />
+            <Text style={[styles.tipText, { color: muted }]}>{tip}</Text>
+          </View>
+        ))}
       </View>
       <View style={styles.footerWrap}>
         <Pressable
@@ -56,6 +57,7 @@ export default function Settings() {
           android_ripple={{ color: tint, borderless: false }}
           style={({ pressed }) => [
             styles.footer,
+            Platform.OS === "android" && styles.footerAndroid,
             {
               backgroundColor:
                 theme === "dark"
@@ -131,6 +133,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  footerAndroid: {
+    overflow: "hidden",
+    elevation: 3,
+    shadowOpacity: 0,
+  },
   icon: { marginRight: 12 },
   footerText: { flexShrink: 1, fontSize: 14, textAlign: "center" },
   featuresCard: {
@@ -146,8 +153,21 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 8,
   },
-  featureItem: {
+  tipRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    paddingVertical: 6,
+  },
+  tipBar: {
+    width: 4,
+    borderRadius: 999,
+    height: 18,
+    marginTop: 2,
+  },
+  tipText: {
     fontSize: 12,
     lineHeight: 18,
+    flex: 1,
   },
 });
