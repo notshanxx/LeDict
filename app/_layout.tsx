@@ -41,7 +41,7 @@ export default function RootLayout() {
   return (
     <>
       <Head>
-        <title>Ledict</title>
+        <title>LeDict</title>
         <meta
           name="description"
           content="A simple dictionary app that lets you create downloadable aesthetic word cards."
