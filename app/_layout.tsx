@@ -4,9 +4,9 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import Head from "expo-router/head";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
 // import { StatusBar } from "expo-status-bar";
 
 const queryClient = new QueryClient();
@@ -39,12 +39,22 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <SafeAreaProvider>
-          <InnerApp />
-        </SafeAreaProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <>
+      <Head>
+        <title>Ledict</title>
+        <meta
+          name="description"
+          content="A simple dictionary app that lets you create downloadable aesthetic word cards."
+        />
+      </Head>
+
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <SafeAreaProvider>
+            <InnerApp />
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </>
   );
 }
