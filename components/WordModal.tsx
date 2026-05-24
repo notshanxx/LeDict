@@ -37,6 +37,7 @@ export default function WordModal({
   onClose: () => void;
 }) {
   const headerRef = useRef<any>(null);
+  const webCaptureRef = useRef<any>(null);
   const [capturing, setCapturing] = useState(false);
   const [selectedMeaningIndex, setSelectedMeaningIndex] = useState(0);
   const [selectedDefinitionIndex, setSelectedDefinitionIndex] = useState(0);
@@ -71,21 +72,29 @@ export default function WordModal({
   const captureAndDownload = async () => {
     try {
       setCapturing(true);
-      const uri = await headerRef.current?.capture?.({ result: "data-uri" });
-
-      if (!uri) {
-        throw new Error("Unable to capture image");
-      }
-
       if (Platform.OS === "web") {
+        const node = webCaptureRef.current as HTMLElement | null;
+        if (!node) {
+          throw new Error("Unable to capture image");
+        }
+
+        const { toPng } = await import("html-to-image");
+        const dataUrl = await toPng(node, { cacheBust: true });
+
         const link = document.createElement("a");
-        link.href = uri;
+        link.href = dataUrl;
         link.download = `${entry?.word ?? "dictionary"}_${selectedMeaningIndex + 1}_${selectedDefinitionIndex + 1}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         Alert.alert("Downloaded", `${entry?.word} saved to your downloads.`);
         return;
+      }
+
+      const uri = await headerRef.current?.capture?.({ result: "data-uri" });
+
+      if (!uri) {
+        throw new Error("Unable to capture image");
       }
 
       if (Platform.OS === "android") {
@@ -192,84 +201,172 @@ export default function WordModal({
               overflow: "hidden",
             }}
           >
-            <ViewShot
-              ref={headerRef}
-              options={{ format: "png", quality: 0.9, result: "data-uri" }}
-              style={{
-                backgroundColor: backgroundColor,
-                width: "100%",
-                alignSelf: "stretch",
-                overflow: "hidden",
-              }}
-            >
+            {Platform.OS === "web" ? (
               <View
+                ref={webCaptureRef}
                 style={{
-                  position: "relative",
                   backgroundColor: backgroundColor,
-                  width: captureWidth,
+                  width: "100%",
+                  alignSelf: "stretch",
+                  overflow: "hidden",
                 }}
               >
                 <View
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: backgroundColor,
-                  }}
-                />
-                <View
-                  style={{
-                    paddingHorizontal: 20,
-                    paddingTop: 20,
-                    paddingBottom: 16,
+                    position: "relative",
                     backgroundColor: backgroundColor,
                     width: captureWidth,
                   }}
                 >
-                  <Text
+                  <View
                     style={{
-                      fontSize: 28,
-                      fontWeight: "bold",
-                      color: textColor,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: backgroundColor,
+                    }}
+                  />
+                  <View
+                    style={{
+                      paddingHorizontal: 20,
+                      paddingTop: 20,
+                      paddingBottom: 16,
+                      backgroundColor: backgroundColor,
+                      width: captureWidth,
                     }}
                   >
-                    {entry.word}
-                  </Text>
-                  {entry.phonetic && (
                     <Text
-                      style={{ fontSize: 16, color: mutedColor, marginTop: 4 }}
+                      style={{
+                        fontSize: 28,
+                        fontWeight: "bold",
+                        color: textColor,
+                      }}
                     >
-                      /{entry.phonetic}/
+                      {entry.word}
                     </Text>
-                  )}
-                  {firstMeaning && (
-                    <View style={{ marginTop: 12 }}>
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontStyle: "italic",
-                          color: mutedColor,
-                        }}
-                      >
-                        {firstMeaning.partOfSpeech}
-                      </Text>
+                    {entry.phonetic && (
                       <Text
                         style={{
                           fontSize: 16,
-                          marginTop: 8,
-                          lineHeight: 22,
-                          color: textColor,
+                          color: mutedColor,
+                          marginTop: 4,
                         }}
                       >
-                        {firstDefinition || "No definition available."}
+                        /{entry.phonetic}/
                       </Text>
-                    </View>
-                  )}
+                    )}
+                    {firstMeaning && (
+                      <View style={{ marginTop: 12 }}>
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontStyle: "italic",
+                            color: mutedColor,
+                          }}
+                        >
+                          {firstMeaning.partOfSpeech}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginTop: 8,
+                            lineHeight: 22,
+                            color: textColor,
+                          }}
+                        >
+                          {firstDefinition || "No definition available."}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
               </View>
-            </ViewShot>
+            ) : (
+              <ViewShot
+                ref={headerRef}
+                options={{ format: "png", quality: 0.9, result: "data-uri" }}
+                style={{
+                  backgroundColor: backgroundColor,
+                  width: "100%",
+                  alignSelf: "stretch",
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    position: "relative",
+                    backgroundColor: backgroundColor,
+                    width: captureWidth,
+                  }}
+                >
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: backgroundColor,
+                    }}
+                  />
+                  <View
+                    style={{
+                      paddingHorizontal: 20,
+                      paddingTop: 20,
+                      paddingBottom: 16,
+                      backgroundColor: backgroundColor,
+                      width: captureWidth,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 28,
+                        fontWeight: "bold",
+                        color: textColor,
+                      }}
+                    >
+                      {entry.word}
+                    </Text>
+                    {entry.phonetic && (
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: mutedColor,
+                          marginTop: 4,
+                        }}
+                      >
+                        /{entry.phonetic}/
+                      </Text>
+                    )}
+                    {firstMeaning && (
+                      <View style={{ marginTop: 12 }}>
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontStyle: "italic",
+                            color: mutedColor,
+                          }}
+                        >
+                          {firstMeaning.partOfSpeech}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginTop: 8,
+                            lineHeight: 22,
+                            color: textColor,
+                          }}
+                        >
+                          {firstDefinition || "No definition available."}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </ViewShot>
+            )}
             {/* definition navigation controls */}
             <View
               style={{
